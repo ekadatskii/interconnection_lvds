@@ -1,2 +1,1 @@
-First commit, without code commenting
-# interconnection_lvds
+# First commit, without code commenting
