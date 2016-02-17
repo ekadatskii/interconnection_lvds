@@ -1,0 +1,5 @@
+rm vivado*
+rm *.jou
+rm *.log
+rm -rf serdes_full_lite
+rm -rf .Xil
