@@ -300,3 +300,5 @@ levelinfo -pg 1 -340 -50 230 560 950 1270 1570 1910 2250 2530 2640 -top -450 -bo
 create_root_design ""
 
 
+puts "\n\nWARNING: This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."
+
