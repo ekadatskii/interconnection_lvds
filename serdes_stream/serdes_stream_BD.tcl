@@ -154,13 +154,13 @@ proc create_root_design { parentCell } {
   # Create instance: fifo_serdes_0, and set properties
   set fifo_serdes_0 [ create_bd_cell -type ip -vlnv user.org:user:fifo_serdes:1.0 fifo_serdes_0 ]
   set_property -dict [ list \
-CONFIG.FIFO_DEPTH {10} \
+CONFIG.FIFO_DEPTH {100} \
  ] $fifo_serdes_0
 
   # Create instance: fifo_serdes_1, and set properties
   set fifo_serdes_1 [ create_bd_cell -type ip -vlnv user.org:user:fifo_serdes:1.0 fifo_serdes_1 ]
   set_property -dict [ list \
-CONFIG.FIFO_DEPTH {10} \
+CONFIG.FIFO_DEPTH {100} \
  ] $fifo_serdes_1
 
   # Create instance: serdes_lvds_0, and set properties
@@ -187,7 +187,7 @@ CONFIG.MASTER_SLAVE {0} \
   set_property -dict [ list \
 CONFIG.INITIAL_NUMBER {2074861569} \
 CONFIG.ITERATION_NUMBER {1} \
-CONFIG.NUMBER_OF_OUTPUT_WORDS {3} \
+CONFIG.NUMBER_OF_OUTPUT_WORDS {100} \
  ] $stream_master_0
 
   # Create instance: stream_slave_1, and set properties

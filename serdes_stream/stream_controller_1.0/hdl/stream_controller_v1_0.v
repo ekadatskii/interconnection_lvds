@@ -71,7 +71,7 @@
     // Checker to control next data receive
     reg [3:0] receive_checker;
     // parameter to control when new data received
-    localparam NEW_DATA = 10;
+    localparam NEW_DATA = 9;
     // st_flag to contain st_flag_i when data receives from serdes
     reg [LVDS_PIN_NUMBER - 1 : 0] st_flag;
     // crc for sending data
@@ -406,6 +406,7 @@
                            if (st_flag[data_pointer + 1]) begin
                                crc_reg <= data_inp[data_pointer * 8 + 7 -: 8];
                                receive_end <= 1'b1;
+                               fifo_wren_o <= 1'b0;
                            end                               
                            else begin                                 
                                fifo_data_o[data_fifo_ptr * 8 + 7 -: 8] <= data_inp[data_pointer * 8 + 7 -: 8];  
@@ -423,9 +424,12 @@
                            if (data_fifo_ptr == 0 && st_flag[data_pointer + 1]) begin 
                                receive_end <= 1'b1;
                                crc_reg <= data_inp[data_pointer * 8 + 7 -: 8];
+                               fifo_wren_o <= 1'b0;
                            end                               
-                           else if (data_fifo_ptr == 1 && st_flag[data_pointer]) 
+                           else if (data_fifo_ptr == 1 && st_flag[data_pointer]) begin
                                receive_end <= 1'b1;
+                               fifo_wren_o <= 1'b0;
+                           end                               
                            else begin                               
                                fifo_data_o[data_fifo_ptr * 8 + 7 -: 8] <= data_inp[data_pointer * 8 + 7 -: 8];  
                                fifo_data_o[data_fifo_ptr * 8 + 15 -: 8] <= data_inp[(data_pointer + 1) * 8 + 7 -: 8];   
@@ -446,10 +450,13 @@
                        else if (LVDS_PIN_NUMBER - data_pointer >= 2 && data_fifo_ptr < 3) begin
                            if (data_fifo_ptr == 0 && st_flag[data_pointer + 1]) begin
                                crc_reg <= data_inp[data_pointer * 8 + 7 -: 8];
-                               receive_end <= 1'b1;    
+                               receive_end <= 1'b1;  
+                               fifo_wren_o <= 1'b0;  
                            end
-                           else if (data_fifo_ptr == 1 && st_flag[data_pointer])
+                           else if (data_fifo_ptr == 1 && st_flag[data_pointer]) begin
                                receive_end <= 1'b1;
+                               fifo_wren_o <= 1'b0;
+                           end                               
                            else begin
                                fifo_data_o[data_fifo_ptr * 8 + 7 -: 8] <= data_inp[data_pointer * 8 + 7 -: 8];  
                                fifo_data_o[data_fifo_ptr * 8 + 15 -: 8] <= data_inp[(data_pointer + 1) * 8 + 7 -: 8];
@@ -467,8 +474,10 @@
                        // ------------------------------------------------------------------------------------
                        // add 1 byte and send 4 bytes to FIFO if all 4 bytes collected                                         
                        else if (LVDS_PIN_NUMBER - data_pointer >= 1 && data_fifo_ptr < 4) begin
-                           if (st_flag[data_pointer]) 
+                           if (st_flag[data_pointer]) begin
                                receive_end <= 1'b1;
+                               fifo_wren_o <= 1'b0;
+                           end                               
                            else begin                                
                                fifo_data_o[data_fifo_ptr * 8 + 7 -: 8] <= data_inp[data_pointer * 8 + 7 -: 8];
                                if (data_fifo_ptr == 3) begin
@@ -492,12 +501,11 @@
                         data_reg[15:8] <= 8'h1;
                         st_flag_o <= 1;
                     end
-                    // TODO: found little bug with crc. Fixing it.
-//                    else if (receive_end && LVDS_PIN_NUMBER >= 2 && crc_reg != crc_7) begin
-//                        data_reg[7:0] <= 8'h7E;
-//                        data_reg[15:8] <= 8'h10;
-//                        st_flag_o <= 1;
-//                    end                                            
+                    else if (receive_end && LVDS_PIN_NUMBER >= 2 && crc_reg != crc_7) begin
+                        data_reg[7:0] <= 8'h7E;
+                        data_reg[15:8] <= 8'h10;
+                        st_flag_o <= 1;
+                    end                                            
 	       end
 	   endcase	   
 	end	
